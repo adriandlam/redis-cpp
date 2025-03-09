@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include "value.h"
 
 /**
  * @class Redis
