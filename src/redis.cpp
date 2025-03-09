@@ -1,3 +1,4 @@
+#include <fstream>
 #include "include/redis_cli/redis.h"
 
 using namespace std;
@@ -53,6 +54,33 @@ size_t Redis::size() {
     return data.size();
 }
 
-void Redis::clear() {
+void Redis::flushall() {
     data.clear();
-}   
+}
+
+bool Redis::exists(const string& key) {
+    return data.find(key) != data.end();
+}
+
+// TODO: Implement load function
+bool Redis::load(const string& filename) {
+
+}
+
+bool Redis::save(const string& filename) {
+    system("mkdir -p data/dumps");
+    
+    string fullPath = "data/dumps/" + filename + ".json";
+    ofstream file(fullPath);
+    
+    if (!file.is_open()) {
+        return false;
+    }
+    
+    for (const auto& pair : data) {
+        file << pair.first << " " << pair.second << endl;
+    }
+    
+    file.close();
+    return true;
+}

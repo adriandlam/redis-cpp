@@ -23,15 +23,34 @@ int main() {
 
         if (command == "HELP") {
             cout << "\n\033[1;33mAvailable Commands:\033[0m\n"
+                 << "  \033[1;36mLOAD\033[0m <filename>    - Load data from a file\n"
+                 << "  \033[1;36mSAVE\033[0m <filename>    - Save data to a file\n"
                  << "  \033[1;36mSET\033[0m <key> <value>  - Set a key-value pair\n"
                  << "  \033[1;36mGET\033[0m <key>         - Get the value of a key\n"
                  << "  \033[1;36mDEL\033[0m <key>         - Delete a key-value pair\n"
                  << "  \033[1;36mKEYS\033[0m              - List all keys\n"
+                 << "  \033[1;36mEXISTS\033[0m <key>        - Check if a key exists\n"
                  << "  \033[1;36mVALUES\033[0m            - List all values\n"
                  << "  \033[1;36mSTORAGE\033[0m           - Get storage size of the database\n"
                  << "  \033[1;36mSIZE\033[0m              - Get number of key-value pairs\n"
-                 << "  \033[1;36mCLEAR\033[0m             - Clear the database\n"
+                 << "  \033[1;36mFLUSHALL\033[0m          - Clear the database\n"
+                 << "  \033[1;36mHELP\033[0m              - Show this help message\n"
                  << "  \033[1;36mEXIT\033[0m              - Exit the program\n" << endl;
+        } else if (command == "LOAD") {
+            // TODO: Implement load function
+            string filename;
+            iss >> filename;
+
+            clock_t start = clock();
+            redis.load(filename);
+            cout << "\033[1;32m[SUCCESS]\033[0m Loaded data from \033[1;36m" << filename << "\033[0m (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
+        } else if (command == "SAVE") {
+            string filename;
+            iss >> filename;
+
+            clock_t start = clock();
+            redis.save(filename);
+            cout << "\033[1;32m[SUCCESS]\033[0m Saved data to \033[1;36mdata/dumps/" << filename << ".json\033[0m (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
         } else if (command == "SET") {
             string key, value;
             iss >> key >> value;
@@ -50,6 +69,15 @@ int main() {
 
             clock_t start = clock();
             cout << "\033[1;32m[SUCCESS]\033[0m Value: '\033[1;36m" << redis.get(key) << "\033[0m' (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
+        } else if (command == "EXISTS") {
+            string key;
+            iss >> key;
+
+            if (redis.exists(key)) {
+                cout << "\033[1;32m[SUCCESS]\033[0m Key '\033[1;36m" << key << "\033[0m' exists" << endl;
+            } else {
+                cout << "\033[1;31m[ERROR]\033[0m Key '\033[1;36m" << key << "\033[0m' does not exist" << endl;
+            }
         } else if (command == "DEL") {
             string key;
             iss >> key;
@@ -83,14 +111,14 @@ int main() {
         } else if (command == "SIZE") {
             clock_t start = clock();
             cout << "\033[1;32m[INFO]\033[0m Database contains \033[1;36m" << redis.size() << "\033[0m key-value pairs (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
-        } else if (command == "CLEAR") {
+        } else if (command == "FLUSHALL") {
             cout << "\033[1;33m[WARN]\033[0m Are you sure you want to clear all data? (y/N): ";
             string confirm;
             getline(cin, confirm);
             if (confirm == "y" || confirm == "Y") {
                 clock_t start = clock();
-                redis.clear();
-                cout << "\033[1;32m[SUCCESS]\033[0m Database cleared (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
+                redis.flushall();
+                cout << "\033[1;32m[SUCCESS]\033[0m Database flushed (\033[1;35m" << clock() - start << "ms\033[0m)" << endl;
             } else {
                 cout << "\033[1;33m[INFO]\033[0m Operation cancelled" << endl;
             }
